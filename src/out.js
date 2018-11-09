@@ -1,33 +1,31 @@
 class Board {
-  initColors(blockNumX, blockNumY) {
-    this.colors = new Array(blockNumY);
-    for (let j=0; j<blockNumY; j++) {
-      this.colors[j] = new Array(blockNumX);
-      for (let i=0; i<blockNumX; i++) {   
-        this.colors[j][i] = Color.EMPTY;
-      }
-    }
-  }
   constructor(blockNumX, blockNumY, canvas) {
     this.blockNumX = blockNumX;
     this.blockNumY = blockNumY;
-    this.initColors();
+    this.colors = new Array(blockNumY);
+    for (let i=0; i<blockNumY; i++) {
+      this.colors[i] = new Array(blockNumX).fill(Color.EMPTY);
+    }
 	  canvas.width = Board.BLOCK_SIZE * blockNumX;
     canvas.height = Board.BLOCK_SIZE * blockNumY;
     canvas.style.backgroundColor = 'gray';
     this.context = canvas.getContext('2d');
+    console.log(this.colors);
   }
 
   setColors(colors) {
-    this.colors = colors;
+    for (let j=0; j<colors.length; j++) {
+      for (let i=0; i<colors[j].length; i++) {
+        this.colors[j][i] = colors[j][i];
+      }
+    }
   }
 
   repaint() {
     this.context.clearRect(0, 0, Board.BLOCK_SIZE * this.blockNumX, Board.BLOCK_SIZE * this.blockNumY);
     for (let j=0; j<this.blockNumY; j++) {
       for (let i=0; i<this.blockNumX; i++) {
-        
-        this.context.fillStyle = (j*this.blockNumX+i)%2 ? Color.I : Color.J;
+        this.context.fillStyle = this.colors[j][i];
         this.context.fillRect(Board.BLOCK_SIZE * i, Board.BLOCK_SIZE * j, Board.BLOCK_SIZE - 2, Board.BLOCK_SIZE - 2);
       }
     }
@@ -48,7 +46,13 @@ onload = function(){
 
 function initCanvas() {
   let canvas = document.getElementById("holdCanvas");
-  let board = new Board(4, 4, canvas);
+	let board = new Board(4, 4, canvas);
+	/*board.setColors([
+		[null   , Color.T, null   ],
+		[Color.T, Color.T, Color.T],
+		[null   , null   , null   ],
+	]);*/
+	board.setColors(new T().getColors());
 	board.repaint();
 	
 	canvas = document.getElementById("mainCanvas");
@@ -76,5 +80,41 @@ const Color = {
   Z: 'red',
   J: 'blue',
   L: 'orange',
-  T: 'violet',
+  T: 'magenta',
+}
+class Mino {
+  constructor(colors) {
+    this.colors = new Array(colors.length);
+    for (let j=0; j<colors.length; j++) {
+      this.colors[j] = new Array(colors[j].length);
+      for (let i=0; i<colors[j].length; i++) {
+        this.colors[j][i] = colors[j][i];
+      }
+    }
+  }
+
+  getColors() {
+    return this.colors;
+  }
+}
+class T extends Mino {
+  constructor() {
+    let pattern = [
+      [0, 1, 0],
+      [1, 1, 1],
+      [0, 0, 0],
+    ];
+    let colors = new Array(pattern.length);
+    for (let j = 0; j < pattern.length; j++) {
+      colors[j] = new Array(pattern[j].length);
+      for (let i = 0; i < pattern.length; i++) {
+        if(pattern[j][i]) {
+          colors[j][i] = Color.T;
+        } else {
+          colors[j][i] = Color.EMPTY;
+        }
+      }
+    }
+    super(colors);
+  }
 }

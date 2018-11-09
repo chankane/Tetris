@@ -1,28 +1,25 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const http = require("http");
 const fs = require("fs");
 class Main {
-    constructor() {
-        const server = http.createServer((request, response) => {
-            this.requestHandler(request, response);
-        });
-        server.listen('4649');
-        console.log('listening');
+  constructor() {
+    const server = http.createServer((request, response) => {
+      this.requestHandler(request, response);
+    });
+    server.listen('4649');
+    console.log('listening');
+  }
+
+  requestHandler(request, response) {
+    console.log(request.url);
+    if (request.url === '/') {
+      request.url = '/index.html';
+      response.writeHead(200, { 'Content-Type': 'text/html' });
+    } else if (request.url === '/index.css') {
+      response.writeHead(200, { 'Content-Type': 'text/css' });
     }
-    /*
-    * サーバーにリクエストがあった時に実行される関数
-    */
-    requestHandler(request, response) {
-        if (request.url === '/') {
-          request.url = '/index.html';
-        }
-        fs.readFile('.' + request.url, 'utf-8', (err, data) => {
-            response.writeHead(200, { 'Content-Type': 'text/html' });
-            response.write(data);
-            response.end();
-        });
-    }
+    fs.readFile('.' + request.url, 'utf-8', (err, data) => {
+      response.end(data);
+    });
+  }
 }
 const main = new Main();
-//# sourceMappingURL=app.js.map

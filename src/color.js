@@ -6,5 +6,5 @@ const Color = {
   Z: 'red',
   J: 'blue',
   L: 'orange',
-  T: 'violet',
+  T: 'magenta',
 }

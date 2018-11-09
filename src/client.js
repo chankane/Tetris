@@ -11,7 +11,13 @@ onload = function(){
 
 function initCanvas() {
   let canvas = document.getElementById("holdCanvas");
-  let board = new Board(4, 4, canvas);
+	let board = new Board(4, 4, canvas);
+	/*board.setColors([
+		[null   , Color.T, null   ],
+		[Color.T, Color.T, Color.T],
+		[null   , null   , null   ],
+	]);*/
+	board.setColors(new T().getColors());
 	board.repaint();
 	
 	canvas = document.getElementById("mainCanvas");

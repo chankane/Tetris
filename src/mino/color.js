@@ -1,8 +1,8 @@
 const Color = {
   EMPTY: 'lightgray',
-  I: 'lightblue',
+  I: 'cyan',
   O: 'yellow',
-  S: 'green',
+  S: 'lime',
   Z: 'red',
   J: 'blue',
   L: 'orange',

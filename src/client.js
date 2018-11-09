@@ -2,7 +2,7 @@ let keyBuf = new Array();
 
 let txt;
 
-let board;
+//let board;
 
 onload = function(){
 	txt = document.getElementById('code');
@@ -12,21 +12,23 @@ onload = function(){
 function initCanvas() {
   let canvas = document.getElementById("holdCanvas");
 	let board = new Board(4, 4, canvas);
-	/*board.setColors([
-		[null   , Color.T, null   ],
-		[Color.T, Color.T, Color.T],
-		[null   , null   , null   ],
-	]);*/
-	board.setColors(new T().getColors());
+	let p = new J();
+	board.setColors(p.getColors());
 	board.repaint();
+	setInterval(() => {
+		p.rotateL();
+		console.log(p.getColors());
+		board.setColors(p.getColors());
+		board.repaint();
+	}, 1000)
 	
 	canvas = document.getElementById("mainCanvas");
-  board = new Board(10, 20, canvas);
-	board.repaint();
+  let board2 = new Board(10, 20, canvas);
+	board2.repaint();
 	
 	canvas = document.getElementById("nextCanvas");
-  board = new Board(4, 4, canvas);
-  board.repaint();
+  let board3 = new Board(4, 4, canvas);
+  board3.repaint();
 }
 
 document.onkeydown = function (e) {

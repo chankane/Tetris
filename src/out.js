@@ -1,3 +1,132 @@
+class Mino {
+  constructor(pattern, color) {
+    this.colors = new Array(pattern.length);
+    for (let j = 0; j < pattern.length; j++) {
+      this.colors[j] = new Array(pattern.length);
+      for (let i = 0; i < pattern.length; i++) {
+        if(pattern[j][i]) {
+          this.colors[j][i] = color;
+        } else {
+          this.colors[j][i] = Color.EMPTY;
+        }
+      }
+    }
+  }
+
+  getColors() {
+    return this.colors;
+  }
+
+  rotateR() {
+    this._transpose();
+    for (let j = 0; j < this.colors.length; j++) {
+      for (let i = 0; i < this.colors.length / 2; i++) {
+        let tmp = this.colors[j][i];
+        this.colors[j][i] = this.colors[j][this.colors.length - i - 1];
+        this.colors[j][this.colors.length - i - 1] = tmp;
+      }
+    }
+  }
+
+  rotateL() {
+    this._transpose();
+      for (let i = 0; i < this.colors.length / 2; i++) {
+        let tmp = this.colors[i];
+        this.colors[i] = this.colors[this.colors.length - i - 1];
+        this.colors[this.colors.length - i - 1] = tmp;
+      }
+  }
+
+  _transpose() {
+    for (let j = 0; j < this.colors.length; j++) {
+      for (let i = 0; i < j; i++) {
+        let tmp = this.colors[j][i];
+        this.colors[j][i] = this.colors[i][j];
+        this.colors[i][j] = tmp;
+      }
+    }
+  }
+}
+const Color = {
+  EMPTY: 'lightgray',
+  I: 'cyan',
+  O: 'yellow',
+  S: 'lime',
+  Z: 'red',
+  J: 'blue',
+  L: 'orange',
+  T: 'magenta',
+}
+class I extends Mino {
+  constructor() {
+    let pattern = [
+      [0, 0, 0, 0],
+      [1, 1, 1, 1],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ];
+    super(pattern, Color.I);
+  }
+}
+class J extends Mino {
+  constructor() {
+    let pattern = [
+      [1, 0, 0],
+      [1, 1, 1],
+      [0, 0, 0],
+    ];
+    super(pattern, Color.J);
+  }
+}
+class L extends Mino {
+  constructor() {
+    let pattern = [
+      [0, 0, 1],
+      [1, 1, 1],
+      [0, 0, 0],
+    ];
+    super(pattern, Color.L);
+  }
+}
+class O extends Mino {
+  constructor() {
+    let pattern = [
+      [1, 1],
+      [1, 1],
+    ];
+    super(pattern, Color.O);
+  }
+}
+class S extends Mino {
+  constructor() {
+    let pattern = [
+      [0, 1, 1],
+      [1, 1, 0],
+      [0, 0, 0],
+    ];
+    super(pattern, Color.S);
+  }
+}
+class T extends Mino {
+  constructor() {
+    let pattern = [
+      [0, 1, 0],
+      [1, 1, 1],
+      [0, 0, 0],
+    ];
+    super(pattern, Color.T);
+  }
+}
+class Z extends Mino {
+  constructor() {
+    let pattern = [
+      [1, 1, 0],
+      [0, 1, 1],
+      [0, 0, 0],
+    ];
+    super(pattern, Color.Z);
+  }
+}
 class Board {
   constructor(blockNumX, blockNumY, canvas) {
     this.blockNumX = blockNumX;
@@ -37,7 +166,7 @@ let keyBuf = new Array();
 
 let txt;
 
-let board;
+//let board;
 
 onload = function(){
 	txt = document.getElementById('code');
@@ -47,21 +176,23 @@ onload = function(){
 function initCanvas() {
   let canvas = document.getElementById("holdCanvas");
 	let board = new Board(4, 4, canvas);
-	/*board.setColors([
-		[null   , Color.T, null   ],
-		[Color.T, Color.T, Color.T],
-		[null   , null   , null   ],
-	]);*/
-	board.setColors(new T().getColors());
+	let p = new J();
+	board.setColors(p.getColors());
 	board.repaint();
+	setInterval(() => {
+		p.rotateL();
+		console.log(p.getColors());
+		board.setColors(p.getColors());
+		board.repaint();
+	}, 1000)
 	
 	canvas = document.getElementById("mainCanvas");
-  board = new Board(10, 20, canvas);
-	board.repaint();
+  let board2 = new Board(10, 20, canvas);
+	board2.repaint();
 	
 	canvas = document.getElementById("nextCanvas");
-  board = new Board(4, 4, canvas);
-  board.repaint();
+  let board3 = new Board(4, 4, canvas);
+  board3.repaint();
 }
 
 document.onkeydown = function (e) {
@@ -72,49 +203,3 @@ document.onkeydown = function (e) {
 document.onkeyup = function (e) {
 	keyBuf[e.keyCode] = false;
 };
-const Color = {
-  EMPTY: 'lightgray',
-  I: 'lightblue',
-  O: 'yellow',
-  S: 'green',
-  Z: 'red',
-  J: 'blue',
-  L: 'orange',
-  T: 'magenta',
-}
-class Mino {
-  constructor(colors) {
-    this.colors = new Array(colors.length);
-    for (let j=0; j<colors.length; j++) {
-      this.colors[j] = new Array(colors[j].length);
-      for (let i=0; i<colors[j].length; i++) {
-        this.colors[j][i] = colors[j][i];
-      }
-    }
-  }
-
-  getColors() {
-    return this.colors;
-  }
-}
-class T extends Mino {
-  constructor() {
-    let pattern = [
-      [0, 1, 0],
-      [1, 1, 1],
-      [0, 0, 0],
-    ];
-    let colors = new Array(pattern.length);
-    for (let j = 0; j < pattern.length; j++) {
-      colors[j] = new Array(pattern[j].length);
-      for (let i = 0; i < pattern.length; i++) {
-        if(pattern[j][i]) {
-          colors[j][i] = Color.T;
-        } else {
-          colors[j][i] = Color.EMPTY;
-        }
-      }
-    }
-    super(colors);
-  }
-}

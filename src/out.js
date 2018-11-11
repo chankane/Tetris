@@ -30,11 +30,11 @@ class Mino {
 
   rotateL() {
     this._transpose();
-      for (let i = 0; i < this.colors.length / 2; i++) {
-        let tmp = this.colors[i];
-        this.colors[i] = this.colors[this.colors.length - i - 1];
-        this.colors[this.colors.length - i - 1] = tmp;
-      }
+    for (let i = 0; i < this.colors.length / 2; i++) {
+      let tmp = this.colors[i];
+      this.colors[i] = this.colors[this.colors.length - i - 1];
+      this.colors[this.colors.length - i - 1] = tmp;
+    }
   }
 
   _transpose() {
@@ -139,6 +139,8 @@ class Board {
     canvas.height = Board.BLOCK_SIZE * blockNumY;
     canvas.style.backgroundColor = 'gray';
     this.context = canvas.getContext('2d');
+    this.minoX = this.minoY = 0;
+    this.mino;
     console.log(this.colors);
   }
 
@@ -150,12 +152,29 @@ class Board {
     }
   }
 
+  setMino(mino) {
+    this.mino = mino;
+  }
+
+  down() {
+    this.minoY++;
+  }
+
   repaint() {
     this.context.clearRect(0, 0, Board.BLOCK_SIZE * this.blockNumX, Board.BLOCK_SIZE * this.blockNumY);
     for (let j=0; j<this.blockNumY; j++) {
       for (let i=0; i<this.blockNumX; i++) {
         this.context.fillStyle = this.colors[j][i];
         this.context.fillRect(Board.BLOCK_SIZE * i, Board.BLOCK_SIZE * j, Board.BLOCK_SIZE - 2, Board.BLOCK_SIZE - 2);
+      }
+    }
+    if (this.mino === undefined) {
+      return;
+    }
+    for (let j=0; j<this.mino.getColors().length; j++) {
+      for (let i=0; i<this.mino.getColors().length; i++) {
+        this.context.fillStyle = this.mino.getColors()[j][i];
+        this.context.fillRect(Board.BLOCK_SIZE * (i + this.minoX), Board.BLOCK_SIZE * (j + this.minoY), Board.BLOCK_SIZE - 2, Board.BLOCK_SIZE - 2);
       }
     }
   }
@@ -177,18 +196,29 @@ function initCanvas() {
   let canvas = document.getElementById("holdCanvas");
 	let board = new Board(4, 4, canvas);
 	let p = new J();
-	board.setColors(p.getColors());
+	//board.setColors(p.getColors());
+	board.setMino(p);
 	board.repaint();
 	setInterval(() => {
 		p.rotateL();
 		console.log(p.getColors());
 		board.setColors(p.getColors());
 		board.repaint();
-	}, 1000)
+	}, 1000);
 	
 	canvas = document.getElementById("mainCanvas");
   let board2 = new Board(10, 20, canvas);
 	board2.repaint();
+	let q = new J();
+	//board.setColors(p.getColors());
+	board2.setMino(q);
+	board2.repaint();
+	setInterval(() => {
+		q.rotateL();
+		board2.down();
+//		board2.setColors(q.getColors());
+		board2.repaint();
+	}, 1000);
 	
 	canvas = document.getElementById("nextCanvas");
   let board3 = new Board(4, 4, canvas);

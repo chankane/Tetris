@@ -1,52 +1,60 @@
 let keyBuf = new Array();
 
-let txt;
+let board;
 
-//let board;
+onload = () => {
+	let canvas = document.getElementById("holdCanvas");
+	let holdBoard = new Board(canvas, BlockSize.MEDIUM);
 
-onload = function(){
-	txt = document.getElementById('code');
-	initCanvas();
-};
-
-function initCanvas() {
-  let canvas = document.getElementById("holdCanvas");
-	let board = new Board(4, 4, canvas);
-	let p = new J();
-	//board.setColors(p.getColors());
-	board.setMino(p);
-	board.repaint();
-	setInterval(() => {
-		p.rotateL();
-		console.log(p.getColors());
-		board.setColors(p.getColors());
-		board.repaint();
-	}, 1000);
+	canvas = document.getElementById("nextCanvas");
+	let nextBoard = new NextBoard(canvas, BlockSize.MEDIUM);
 	
 	canvas = document.getElementById("mainCanvas");
-  let board2 = new Board(10, 20, canvas);
-	board2.repaint();
-	let q = new J();
-	//board.setColors(p.getColors());
-	board2.setMino(q);
-	board2.repaint();
-	setInterval(() => {
-		q.rotateL();
-		board2.down();
-//		board2.setColors(q.getColors());
-		board2.repaint();
-	}, 1000);
+	board = new MainBoard(canvas, BlockSize.MEDIUM, holdBoard, nextBoard);
 	
-	canvas = document.getElementById("nextCanvas");
-  let board3 = new Board(4, 4, canvas);
-  board3.repaint();
-}
+	holdBoard.repaint();
+	board.repaint();
+	nextBoard.repaint();
 
-document.onkeydown = function (e) {
-	txt.innerText = e.keyCode;
-	keyBuf[e.keyCode] = true;
+	canvas = document.getElementById("t");
+	let context = canvas.getContext('2d');
+	context.fillRect(-50, -50, 100, 100);
 };
 
-document.onkeyup = function (e) {
+document.onkeydown = (e) => {
+	keyBuf[e.keyCode] = true;
+	switch (e.keyCode) {
+	case KeyEvent.DOM_VK_Z:
+		board.rotateLeft();
+		board.repaint();
+		break;
+	case KeyEvent.DOM_VK_X:
+		board.rotateRight();
+		board.repaint();
+		break;
+	case KeyEvent.DOM_VK_SPACE:
+		board.hold();
+		board.repaint();
+		break;
+	case KeyEvent.DOM_VK_UP:
+		board.hardDrop();
+		board.repaint();
+		break;
+	case KeyEvent.DOM_VK_DOWN:
+		board.softDrop();
+		board.repaint();
+		break;
+	case KeyEvent.DOM_VK_LEFT:
+		board.moveLeft();
+		board.repaint();
+		break;
+	case KeyEvent.DOM_VK_RIGHT:
+		board.moveRight();
+		board.repaint();
+		break;
+	}
+};
+
+document.onkeyup = (e) => {
 	keyBuf[e.keyCode] = false;
 };

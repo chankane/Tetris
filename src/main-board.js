@@ -25,9 +25,7 @@ class MainBoard extends Board {
       this.minoY++;
       if (this._isIllegalPosition()) {
         this.minoY--;
-        this._fixMino();
-        this.minoY = 0;
-        this.mino = this.nextBoard.getMino();
+        this._next();
       }
       this.repaint();
     }, 1000);
@@ -39,6 +37,10 @@ class MainBoard extends Board {
 
   softDrop() {
     this.minoY++;
+    if (this._isIllegalPosition()) {
+      this.minoY--;
+      this._next();
+    }
   }
 
   moveLeft() {
@@ -65,6 +67,12 @@ class MainBoard extends Board {
 
   hold() {
     //?
+  }
+
+  _next() {
+    this._fixMino();
+    this.minoY = 0;
+    this.mino = this.nextBoard.getMino();
   }
 
   _fixMino() {
@@ -108,6 +116,9 @@ class MainBoard extends Board {
     let colors = this.mino.getColors();
     for (let j=0; j<colors.length; j++) {
       for (let i=0; i<colors.length; i++) {
+        if (colors[j][i] == Color.EMPTY) {
+          continue;
+        }
         this.context.fillStyle = colors[j][i];
         this.context.fillRect(this.blockSize * (this.minoX + i), this.blockSize * (this.minoY + j - MainBoard._HIDE_HEIGHT + 0.25),
             this.blockSize - 2, this.blockSize - 2);

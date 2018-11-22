@@ -1,78 +1,49 @@
-class MainBoard extends Board {
+class MainBoard extends AbstractBoard {
 
-  _initColors() {
-    this.colors = new Array(MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT);
-    for (let j = 0; j < MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT; j++) {
-      this.colors[j] = new Array(MainBoard._WIDTH).fill(Color.EMPTY);
-    }
+  static _calcPixelWidth() {
+    return MainBoard._BLOCK_SIZE * MainBoard._WIDTH;
+  }
+  
+  static _calcPixelHeight() {
+    return MainBoard._BLOCK_SIZE * MainBoard._HEIGHT;
   }
 
-  constructor(canvas, blockSize, holdBoard, nextBoard) {
-    super(canvas, blockSize);
-    canvas.width = blockSize * MainBoard._WIDTH;
-    canvas.height = blockSize * (MainBoard._HEIGHT + 0.25);
-    this.minoX = this.minoY = 0;
-    this.colors = null;
+  _initColors() {
+    this._colors = new Array(Math.floor(MainBoard._HEIGHT));
+    for (let j = 0; j < MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT; j++) {
+      this._colors[j] = new Array(MainBoard._WIDTH).fill(Color.EMPTY);
+    }
+    this._colors.x = 0;
+    this._colors.y = 0;
+  }
+
+  constructor(canvas, holdBoard, nextBoard) {
+    super(canvas);
+    canvas.width = MainBoard._calcPixelWidth();
+    canvas.height = MainBoard._calcPixelHeight();
+    this._minoX = this._minoY = 0;
     this._initColors();
-    this.holdBoard = holdBoard;
-    this.nextBoard = nextBoard;
+    this._holdBoard = holdBoard;
+    this._nextBoard = nextBoard;
     this.setMino(nextBoard.getMino());
     this.startDropping();
   }
 
   startDropping() {
     setInterval(() => {
-      this.minoY++;
-      if (this._isIllegalPosition()) {
-        this.minoY--;
+      this._minoY++;
+      if (Srs._isIllegalPosition()) {
+        this._minoY--;
         this._next();
       }
       this.repaint();
     }, 1000);
   }
 
-  hardDrop() {
-    //?
-  }
-
-  softDrop() {
-    this.minoY++;
-    if (this._isIllegalPosition()) {
-      this.minoY--;
-      this._next();
-    }
-  }
-
-  moveLeft() {
-    this.minoX--;
-    if (this._isIllegalPosition()) {
-      this.minoX++;
-    }
-  }
-
-  moveRight() {
-    this.minoX++;
-    if (this._isIllegalPosition()) {
-      this.minoX--;
-    }
-  }
-
-  rotateLeft() {
-    this.mino.rotateL();
-  }
-
-  rotateRight() {
-    this.mino.rotateR();
-  }
-
-  hold() {
-    //?
-  }
-
   _next() {
     this._fixMino();
-    this.minoY = 0;
-    this.mino = this.nextBoard.getMino();
+    this._minoY = 0;
+    this._mino = this._nextBoard.getMino();
   }
 
   _fixMino() {
@@ -86,47 +57,36 @@ class MainBoard extends Board {
     }
   }
 
-  _isIllegalPosition() {
-    let colors = this.mino.getColors();
+  repaint(colors) {
+    this._clearScreen();
     for (let j=0; j<colors.length; j++) {
       for (let i=0; i<colors[j].length; i++) {
-        if (colors[j][i] !== Color.EMPTY
-            && (this.minoX + i < 0 || this.minoX + i >= MainBoard._WIDTH || this.minoY + j >= MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT
-            || this.colors[this.minoY + j][this.minoX + i] !== Color.EMPTY)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  repaint() {
-    this.context.clearRect(0, 0, this.blockSize * Board._WIDTH, this.blockSize * (Board._HEIGHT - MainBoard._HIDE_HEIGHT + 0.25));
-    for (let j=0; j<this.colors.length; j++) {
-      for (let i=0; i<this.colors[j].length; i++) {
-        this.context.fillStyle = this.colors[j][i];
-        this.context.fillRect(this.blockSize * i, this.blockSize * (j - MainBoard._HIDE_HEIGHT + 0.25),
-            this.blockSize - 2, this.blockSize - 2);
+        this.context.fillStyle = colors[j][i];
+        this.context.fillRect(MainBoard._BLOCK_SIZE * i, MainBoard._BLOCK_SIZE * (j - MainBoard._HIDE_HEIGHT + 0.25),
+        MainBoard._BLOCK_SIZE - 2, MainBoard._BLOCK_SIZE - 2);
       }
     }
 
-    if (this.mino === null) {
+    /*if (this.mino === null) {
       return;
     }
-    let colors = this.mino.getColors();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors.length; i++) {
-        if (colors[j][i] == Color.EMPTY) {
+    for (let j=0; j<this.mino.length; j++) {
+      for (let i=0; i<this.mino[j].length; i++) {
+        if (this.mino[j][i] == Color.EMPTY) {
           continue;
         }
-        this.context.fillStyle = colors[j][i];
-        this.context.fillRect(this.blockSize * (this.minoX + i), this.blockSize * (this.minoY + j - MainBoard._HIDE_HEIGHT + 0.25),
-            this.blockSize - 2, this.blockSize - 2);
+        this.context.fillStyle = this.mino[j][i];
+        this.context.fillRect(MainBoard._BLOCK_SIZE * (this.minoX + i), MainBoard._BLOCK_SIZE * (this.minoY + j - MainBoard._HIDE_HEIGHT + 0.25),
+        MainBoard._BLOCK_SIZE - 2, MainBoard._BLOCK_SIZE - 2);
       }
-    }
+    }*/
+  }
+
+  _clearScreen() {
+    this._context.clearRect(0, 0, MainBoard._calcPixelWidth(), MainBoard._calcPixelHeight());
   }
 }
 
-MainBoard._WIDTH = 10;
-MainBoard._HEIGHT = 20;
-MainBoard._HIDE_HEIGHT = 4;
+MainBoard._BLOCK_SIZE = 20;
+MainBoard.WIDTH = MainLogic._WIDTH;
+MainBoard.HEIGHT = 20.25;
